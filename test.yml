@@ -1,0 +1,62 @@
+---
+# Test configuration block
+config:
+  target:
+    # Due to use of public free APIs, and to ensure their uptime, all tests are shorter with smaller ammount of VUsers
+    # Credits of API to their author.
+    'https://fakestoreapi.com/'
+
+  phases:
+    # # Load Test with normal parameters,
+    # # `maxVusers` is the maximal avarage ammount if users who visits shop in 1 hour:
+    # - duration: 7200
+    #   arrivalRate: 10
+    #   maxVusers: 100
+
+    - duration: 1
+      arrivalRate: 1
+      maxVusers: 10
+      name: Load Testing
+
+  plugins:
+    # Additional plugin to validate status responses and checks for failed runs
+    ensure: {}
+
+  # Conditions for plugin:
+  ensure:
+    conditions:
+      - expression: vusers.failed == 0
+      - expression: http.response_time.max < 1000
+      - expression: http.codes.200 == vusers.completed
+
+# Test Cases
+scenarios:
+  # Test that fetches information about one product, simulates user clicking on product on webpage
+  - name: Get access to one product
+    flow:
+      - get:
+          # After reviewing artillery documentation, processor javascript function was changed
+          #  to $randomNumber string inbuild funcion from artillery
+          url: '{{ target }}products/{{ $randomNumber(1,20) }}'
+
+  # Test that posts a new cart, that simulates a user who adds some products to their cart
+  - name: Adding a new cart
+    flow:
+      - post:
+          url: '{{ target }}carts/'
+          json:
+            # Setting random userID for every test execution of VUser
+            userID: '{{ $randomNumber(1,10) }}'
+            date: 2024-06-10
+            products:
+              # Setting random parameters for productId and quanity to simulate varied VUser operations
+              [
+                {
+                  productId: '{{ $randomNumber(1,10 )}}',
+                  quanity: '{{ $randomNumber(1,2) }}',
+                },
+                {
+                  productId: '{{ $randomNumber(1,10 )}}',
+                  quanity: '{{ $randomNumber(1,2) }}',
+                },
+              ]
