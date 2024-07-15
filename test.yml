@@ -37,8 +37,6 @@ config:
       - 'date'
       - 'productId'
       - 'quanity'
-    # loadAll to use a loop for more VUsers
-    loadAll: true
 
 # Test Cases
 scenarios:
@@ -55,19 +53,27 @@ scenarios:
     flow:
       - post:
           url: '{{ target }}carts/'
+          # Using payload to provide JSON data:
           json:
-            # Setting random userID for every test execution of VUser
-            userID: '{{ $randomNumber(1,10) }}'
-            date: 2024-06-10
+            userID: '{{ userId }}'
+            date: '{{ date }}'
             products:
-              # Setting random parameters for productId and quanity to simulate varied VUser operations
-              [
-                {
-                  productId: '{{ $randomNumber(1,10 )}}',
-                  quanity: '{{ $randomNumber(1,2) }}',
-                },
-                {
-                  productId: '{{ $randomNumber(1,10 )}}',
-                  quanity: '{{ $randomNumber(1,2) }}',
-                },
-              ]
+              [{ productId: '{{ productId }}', quanity: '{{ quanity }}' }]
+
+  # # JSON that uses random generator from artillery, that generates 2 random products(productId) with random quanity
+  #         json:
+  #           # Setting random userID for every test execution of VUser
+  #           userID: '{{ $randomNumber(1,10) }}'
+  #           date: 2024-06-10
+  #           products:
+  #             # Setting random parameters for productId and quanity to simulate varied VUser operations
+  #             [
+  #               {
+  #                 productId: '{{ $randomNumber(1,10 )}}',
+  #                 quanity: '{{ $randomNumber(1,2) }}',
+  #               },
+  #               {
+  #                 productId: '{{ $randomNumber(1,10 )}}',
+  #                 quanity: '{{ $randomNumber(1,2) }}',
+  #               },
+  #             ]
