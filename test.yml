@@ -29,6 +29,13 @@ config:
       - expression: http.response_time.max < 1000
       - expression: http.codes.200 == vusers.completed
 
+  payload:
+    # Create external csv file with payload that needs to be added to cart
+    path: 'cart_content.csv'
+    fields:
+      - 'productId'
+      - 'quanity'
+
 # Test Cases
 scenarios:
   # Test that fetches information about one product, simulates user clicking on product on webpage
